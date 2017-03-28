@@ -4,7 +4,7 @@ integrate performance model into a system design
 
 sampling to charaterize the performance, after training on non-linear model, predict the performance on large dataset
 
-finished, but need further verification
+finished, but need further verification:
 disk I/O on specific disk devices can be profiled using constant time
 
 experiment done:
