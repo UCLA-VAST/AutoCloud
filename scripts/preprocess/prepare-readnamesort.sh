@@ -52,7 +52,7 @@ function worker() # SCRIPT_DIR, nid, fastq_gz_file, FASTQ2, SORT_TMP, BAM_FILE
 
     ssh 10.10.${nid}.7 bash 2> >(tee ${BAM_DIR}/${BAM_FILE//.bam/.log} >&2) <<EOS
         ${SCRIPT_DIR}/bwa/bwa mem -t \$(nproc) -Ma -R "@RG\tID:HCC1954\tPL:illumina\tLB:HCC1954\tSM:HCC1954" ${FASTA_FILE} ${fastq_gz_file} ${FASTQ2}|\
-        ${SCRIPT_DIR}/samtools/samtools sort -n -@ 8 -T ${SORT_TMP}/samtools.sort >${BAM_DIR}/${BAM_FILE}
+        ${SCRIPT_DIR}/samtools/samtools sort -n -@ \$(nproc) -T ${SORT_TMP}/samtools.sort -m \$((16384/\$(nproc)))M -o ${BAM_DIR}/${BAM_FILE}
 EOS
     rm ${LOCAL_TMP}/c${nid}RUNNING-${PID}
 }
