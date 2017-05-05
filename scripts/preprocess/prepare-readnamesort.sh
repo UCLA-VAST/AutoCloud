@@ -15,9 +15,10 @@ LOCAL_TMP=/tmp
 WORKERS="11 12 13 14 15 16"
 
 # check for necessary things on remote: reference, fastqs, bamdir, scripts
+PID=$$
 for nid in ${WORKERS}
 do
-    rm -f ${LOCAL_TMP}/c${nid}RUNNING
+    rm -f ${LOCAL_TMP}/c${nid}RUNNING-${PID}
     if ! ssh 10.10.${nid}.7 bash <<EOS
         (test -f ${FASTA_FILE} || (echo -e "\e[31m\${HOSTNAME}:\e[39m Reference file \"${FASTA_FILE}\" not found." >&2;exit 1)) &&
         (test -d ${FASTQ_GZ_DIR} || (echo -e "\e[31m\${HOSTNAME}:\e[39m Input fastq directory \"${FASTQ_GZ_DIR}\" not found." >&2;exit 1)) &&
@@ -53,7 +54,7 @@ function worker() # SCRIPT_DIR, nid, fastq_gz_file, FASTQ2, SORT_TMP, BAM_FILE
         ${SCRIPT_DIR}/bwa/bwa mem -t \$(nproc) -Ma -R "@RG\tID:HCC1954\tPL:illumina\tLB:HCC1954\tSM:HCC1954" ${FASTA_FILE} ${fastq_gz_file} ${FASTQ2}|\
         ${SCRIPT_DIR}/samtools/samtools sort -n -@ 8 -T ${SORT_TMP}/samtools.sort >${BAM_DIR}/${BAM_FILE}
 EOS
-    rm ${LOCAL_TMP}/c${nid}RUNNING
+    rm ${LOCAL_TMP}/c${nid}RUNNING-${PID}
 }
 
 for fastq_gz_file in $(ls -S ${FASTQ_GZ_DIR}/*.fastq.gz)
@@ -70,9 +71,9 @@ do
     do
         for nid in ${WORKERS}
         do
-            if ! test -f ${LOCAL_TMP}/c${nid}RUNNING
+            if ! test -f ${LOCAL_TMP}/c${nid}RUNNING-${PID}
             then
-                touch ${LOCAL_TMP}/c${nid}RUNNING
+                touch ${LOCAL_TMP}/c${nid}RUNNING-${PID}
                 worker&
                 DONE=true
                 break
