@@ -1,4 +1,4 @@
-# AutoCloud
+# Doppio
 Build I/O-Aware Analytic Model for Apache Spark Applications, and we show GATK4 (Apache Spark based GATK) developed by Broad Institute as the driving example.
 
 1. I/O profiling (we provide I/O profiling result for Google Cloud)
